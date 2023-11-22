@@ -1,24 +1,23 @@
-﻿namespace App;
+﻿using AVFoundation;
+
+namespace App;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
 
 	public MainPage()
 	{
 		InitializeComponent();
+		Console.WriteLine("MAINPAGE INIT()");
 	}
 
-	private void OnCounterClicked(object sender, EventArgs e)
+	private void photocapture_clicked(object sender, EventArgs e)
 	{
-		count++;
+		Console.WriteLine("photocapture_clicked clicked!");
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+		CameraPreview.StartCamera();
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
 	}
+
 }
 
