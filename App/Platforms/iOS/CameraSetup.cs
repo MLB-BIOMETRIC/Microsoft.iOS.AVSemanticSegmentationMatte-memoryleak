@@ -9,10 +9,12 @@ public class CameraSetup : UIView
     public AVCaptureSession captureSession { get; set; }
     public AVCapturePhotoOutput stillImageOutput { get; set; }
     public AVCaptureVideoPreviewLayer videoPreviewLayer { get; set; }
+    public CameraProcessor cameraProcessor { get; set; }
 
     public CameraSetup()
     {
         Console.WriteLine("CAMERASETUP()");
+        cameraProcessor = new CameraProcessor();
         Initialize();
     }
 
@@ -72,20 +74,30 @@ public class CameraSetup : UIView
 
         Layer.AddSublayer(videoPreviewLayer);
 
-        Console.WriteLine("Live preview setup!");
-        Task.Run(() =>
-        {
-            StartCamera();
-        });
+        startLivePreview();
+    }
+
+    public void startLivePreview()
+    {
+        Console.WriteLine("Live Preview Started!");
 
         Task.Run(() =>
-        {
-            Thread.Sleep(1000);
-            MainThread.BeginInvokeOnMainThread(() =>
             {
-                videoPreviewLayer.Frame = Layer.Bounds;
+                captureSession.StartRunning();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    videoPreviewLayer.Frame = Layer.Bounds;
+                });
             });
-        });
+    }
+
+    public void stopLivePreview()
+    {
+        Console.WriteLine("Live preview stopped");
+        Task.Run(() =>
+            {
+                captureSession.StartRunning();
+            });
     }
 
     public async Task<bool> CheckCameraPermissionAsync()
@@ -96,13 +108,6 @@ public class CameraSetup : UIView
             status = await Permissions.RequestAsync<Permissions.Camera>();
         }
         return status == PermissionStatus.Granted;
-    }
-
-    public void StartCamera()
-    {
-        Layer.Hidden = false;
-        Console.WriteLine("Session is running!");
-        captureSession.StartRunning();
     }
 
 }

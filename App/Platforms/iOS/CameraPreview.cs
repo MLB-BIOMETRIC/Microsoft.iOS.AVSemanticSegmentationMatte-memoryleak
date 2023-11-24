@@ -10,10 +10,5 @@ namespace App
         {
             Console.WriteLine("CAMERAPREVIEW INIT()");
         }
-
-        public static void StartCamera()
-        {
-            Console.WriteLine("starting camera");
-        }
     }
 }

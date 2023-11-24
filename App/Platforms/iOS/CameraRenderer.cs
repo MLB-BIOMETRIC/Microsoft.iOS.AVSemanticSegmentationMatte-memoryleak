@@ -11,6 +11,8 @@ namespace App
     public class CameraRenderer : ViewRenderer<CameraPreview, CameraSetup>
     {
 
+        public static CameraSetup? CurrentCamera;
+
         protected override void OnElementChanged(ElementChangedEventArgs<CameraPreview> e)
         {
             Console.WriteLine("ON ELEMENT CHANGED");
@@ -20,11 +22,11 @@ namespace App
             {
                 if (Control == null)
                 {
-                    // Create your native UIView here
-                    var currentCamera = new CameraSetup();
+
+                    CurrentCamera = new CameraSetup();
                     // Configure your UIView as needed
 
-                    SetNativeControl(currentCamera);
+                    SetNativeControl(CurrentCamera);
                 }
             }
         }
