@@ -14,4 +14,4 @@ Furthermore, there is also a bug where the code line above only works for the fi
 
 Use Apple Instruments software and run an "Allocation" test on the repo. This will show the the memory leak.
 
-![Instruments with 4 memory leaks](/images/InstrumentsMemoryLeakHairMask.png)
+![Instruments with 4 memory leaks](/Images/InstrumentsMemoryLeakHairMask.png)
