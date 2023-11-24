@@ -27,18 +27,37 @@ public partial class ImageShowcasePage : ContentPage
             CameraRenderer.CurrentCamera.cameraProcessor.FinishedProcessingPhotoEvent -= showPhotoTaken;
         }
         Photo.Source = null;
+        HairMask.Source = null;
     }
 
     private async void goback_button(object sender, EventArgs e)
     {
-        Console.WriteLine("Go back!");
         await Navigation.PopAsync();
     }
 
-    private void showPhotoTaken(byte[] photodata)
+    private void showPhotoTaken(byte[] photodata, byte[] hairmaskdata)
     {
-        Photo.Source = ImageSource.FromStream(() => new MemoryStream(photodata));
-        Console.WriteLine("completely done!");
+
+        if (photodata != null)
+        {
+            Photo.Source = ImageSource.FromStream(() => new MemoryStream(photodata));
+            MainImageText.IsVisible = false;
+        }
+        else
+        {
+            MainImageText.Text = "Error";
+        }
+
+        if (hairmaskdata != null)
+        {
+            HairMask.Source = ImageSource.FromStream(() => new MemoryStream(hairmaskdata));
+            HairMaskText.IsVisible = false;
+        }
+        else
+        {
+            HairMaskText.Text = "Error";
+        }
+
     }
 
 }

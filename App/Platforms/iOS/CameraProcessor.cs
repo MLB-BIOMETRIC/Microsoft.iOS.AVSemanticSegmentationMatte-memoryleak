@@ -7,7 +7,7 @@ using UIKit;
 namespace App
 {
 
-    public delegate void FinishedProcessingPhoto(byte[] photodata);
+    public delegate void FinishedProcessingPhoto(byte[]? photodata, byte[]? maskdata);
 
     public class CameraProcessor : AVCapturePhotoCaptureDelegate
     {
@@ -20,13 +20,14 @@ namespace App
             if (error != null)
             {
                 Console.WriteLine(error);
+                FinishedProcessingPhotoEvent?.Invoke(null, null);
                 return;
             }
 
             if (photo.CGImageRepresentation == null)
             {
                 Console.WriteLine("Photo taken is null!");
-                FinishedProcessingPhotoEvent?.Invoke([]);
+                FinishedProcessingPhotoEvent?.Invoke(null, null);
                 return;
             }
 
@@ -37,19 +38,57 @@ namespace App
             if (uiimage == null)
             {
                 Console.WriteLine("Could not create UIImage");
-                FinishedProcessingPhotoEvent?.Invoke([]);
+                FinishedProcessingPhotoEvent?.Invoke(null, null);
                 return;
             }
 
-            Console.WriteLine("didFinishProcessingPhoto");
+            var uiimagedata = uiimage.AsJPEG(0.5f)?.ToArray();
+
+            if (uiimagedata == null)
+            {
+                Console.WriteLine("UIImagedata is null");
+                FinishedProcessingPhotoEvent?.Invoke(null, null);
+                return;
+            }
+
+            var hairmaskraw = photo.GetSemanticSegmentationMatte(AVSemanticSegmentationMatteType.Hair);
+
+            if (hairmaskraw == null)
+            {
+                Console.WriteLine("Hairmask raw is null");
+                FinishedProcessingPhotoEvent?.Invoke(uiimagedata, null);
+                return;
+            }
+
+            var hairMask = new CIImage(hairmaskraw).CreateByApplyingOrientation(ImageIO.CGImagePropertyOrientation.Right);
+
+            if (hairMask == null)
+            {
+                Console.WriteLine("Hairmask CIImage is null");
+                FinishedProcessingPhotoEvent?.Invoke(uiimagedata, null);
+                return;
+            }
+
+            var hairmaskuiimage = new UIImage(hairMask);
+
+            if (hairmaskuiimage == null)
+            {
+                Console.WriteLine("Could not create UIImage");
+                FinishedProcessingPhotoEvent?.Invoke(uiimagedata, null);
+                return;
+            }
+
+            var hairmaskuiimagedata = hairmaskuiimage.AsJPEG(0.5f)?.ToArray();
+
+            if (hairmaskuiimagedata == null)
+            {
+                Console.WriteLine("UIImagedata is null");
+                FinishedProcessingPhotoEvent?.Invoke(null, null);
+                return;
+            }
 
             // Send the photo back to the showcasepage
-            FinishedProcessingPhotoEvent?.Invoke(uiimage.AsJPEG(0.5f).ToArray());
-        }
-
-        public override void DidCapturePhoto(AVCapturePhotoOutput captureOutput, AVCaptureResolvedPhotoSettings resolvedSettings)
-        {
-            Console.WriteLine("didCapturePhoto!");
+            FinishedProcessingPhotoEvent?.Invoke(uiimagedata, hairmaskuiimagedata);
         }
     }
 }

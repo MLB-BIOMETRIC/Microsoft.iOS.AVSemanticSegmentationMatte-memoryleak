@@ -15,7 +15,6 @@ namespace App
 
         protected override void OnElementChanged(ElementChangedEventArgs<CameraPreview> e)
         {
-            Console.WriteLine("ON ELEMENT CHANGED");
             base.OnElementChanged(e);
 
             if (e.NewElement != null)

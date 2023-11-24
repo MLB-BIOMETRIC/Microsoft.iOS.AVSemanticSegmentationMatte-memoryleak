@@ -1,4 +1,5 @@
 using AVFoundation;
+using CoreVideo;
 using UIKit;
 
 namespace App;
@@ -13,14 +14,13 @@ public class CameraSetup : UIView
 
     public CameraSetup()
     {
-        Console.WriteLine("CAMERASETUP()");
         cameraProcessor = new CameraProcessor();
         Initialize();
     }
 
     public async void Initialize()
     {
-
+        Console.WriteLine("Setting up camera!");
         if (!await CheckCameraPermissionAsync())
         {
             throw new Exception("No camera permission!");
@@ -31,9 +31,7 @@ public class CameraSetup : UIView
             SessionPreset = AVCaptureSession.PresetPhoto
         };
 
-        var device = (AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInDualWideCamera, AVMediaTypes.Video, AVCaptureDevicePosition.Back) ?? null) ?? throw new Exception("Device not found!");
-
-        Console.WriteLine("DEVICE OK!");
+        var device = (AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInDualWideCamera, AVMediaTypes.DepthData, AVCaptureDevicePosition.Back) ?? null) ?? throw new Exception("Device not found!");
 
         var input = new AVCaptureDeviceInput(device, out var error);
 
@@ -42,29 +40,34 @@ public class CameraSetup : UIView
             throw new Exception("Input has error!");
         }
 
-        Console.WriteLine("INPUT OK");
-
-        stillImageOutput = new AVCapturePhotoOutput();
-
-        Console.WriteLine("OUTPUT OK");
+        stillImageOutput = new AVCapturePhotoOutput()
+        {
+            MaxPhotoQualityPrioritization = AVCapturePhotoQualityPrioritization.Speed,
+        };
 
         if (captureSession.CanAddInput(input) && captureSession.CanAddOutput(stillImageOutput))
         {
-            Console.WriteLine("CAN ADD INPUT AND OUTPUT!");
             captureSession.AddInput(input);
-            Console.WriteLine("INPUT ADDED!");
             captureSession.AddOutput(stillImageOutput);
-            Console.WriteLine("OUTPUT ADDED!");
-
             captureSession.CommitConfiguration();
-
-            Console.WriteLine("CONFIGURATION COMMITTED!");
             setupLivePreview();
+        }
+
+        if (stillImageOutput.DepthDataDeliverySupported)
+        {
+            stillImageOutput.DepthDataDeliveryEnabled = true;
+        };
+
+        if (stillImageOutput.PortraitEffectsMatteDeliverySupported)
+        {
+            stillImageOutput.EnabledSemanticSegmentationMatteTypes = stillImageOutput.AvailableSemanticSegmentationMatteTypes; // Set all the available
+            stillImageOutput.PortraitEffectsMatteDeliveryEnabled = true; // Enable sementaing delivery
         }
     }
 
     private void setupLivePreview()
     {
+        Console.WriteLine("Setting up live preview!");
         videoPreviewLayer = new AVCaptureVideoPreviewLayer(captureSession)
         {
             VideoGravity = AVLayerVideoGravity.ResizeAspectFill,
@@ -79,8 +82,7 @@ public class CameraSetup : UIView
 
     public void startLivePreview()
     {
-        Console.WriteLine("Live Preview Started!");
-
+        Console.WriteLine("Live preview started!");
         Task.Run(() =>
             {
                 captureSession.StartRunning();
@@ -93,7 +95,7 @@ public class CameraSetup : UIView
 
     public void stopLivePreview()
     {
-        Console.WriteLine("Live preview stopped");
+        Console.WriteLine("Live preview stopped!");
         Task.Run(() =>
             {
                 captureSession.StartRunning();

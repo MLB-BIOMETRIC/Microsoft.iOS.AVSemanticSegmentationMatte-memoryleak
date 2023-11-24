@@ -10,7 +10,6 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-		Console.WriteLine("MAINPAGE INIT()");
 	}
 
 	protected override void OnAppearing()
@@ -25,19 +24,22 @@ public partial class MainPage : ContentPage
 
 	private async void photocapture_clicked(object sender, EventArgs e)
 	{
-		// I WANT TO BE ABLE TO TAKE PHOTO HERE
-		Console.WriteLine("photocapture_clicked clicked!");
-
 		if (CameraRenderer.CurrentCamera != null)
 		{
+			Console.WriteLine("Capturing photo...");
 			var format = new NSDictionary<NSString, NSObject>(CVPixelBuffer.PixelFormatTypeKey, new NSNumber((uint)CVPixelFormatType.CV420YpCbCr8BiPlanarFullRange));
 			var settings = AVCapturePhotoSettings.FromFormat(format);
+
+			settings.PortraitEffectsMatteDeliveryEnabled = CameraRenderer.CurrentCamera.stillImageOutput.PortraitEffectsMatteDeliveryEnabled;
+			settings.EnabledSemanticSegmentationMatteTypes = CameraRenderer.CurrentCamera.stillImageOutput.AvailableSemanticSegmentationMatteTypes;
+
 			CameraRenderer.CurrentCamera.stillImageOutput.CapturePhoto(settings, CameraRenderer.CurrentCamera.cameraProcessor);
 			await Navigation.PushAsync(new ImageShowcasePage());
 		}
 		else
 		{
-			Console.WriteLine("cant take picture!");
+			throw new Exception("Camera is not initalized yet!");
+
 		}
 
 

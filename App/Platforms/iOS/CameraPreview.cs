@@ -8,7 +8,6 @@ namespace App
 
         public CameraPreview()
         {
-            Console.WriteLine("CAMERAPREVIEW INIT()");
         }
     }
 }
