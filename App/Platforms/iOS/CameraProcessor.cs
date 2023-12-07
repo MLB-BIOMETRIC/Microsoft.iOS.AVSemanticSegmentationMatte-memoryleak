@@ -1,7 +1,6 @@
 using AVFoundation;
 using CoreImage;
 using Foundation;
-using Microsoft.Maui.Controls;
 using UIKit;
 
 namespace App
@@ -64,7 +63,14 @@ namespace App
                     return;
                 }
 
-                using var cihairmask = new CIImage(hairmaskraw);
+                if (hairmaskraw.MattingImage == null)
+                {
+                    Console.WriteLine("Hair mask matting image is null");
+                    FinishedProcessingPhotoEvent?.Invoke(uiimagedata, null);
+                    return;
+                }
+
+                using var cihairmask = new CIImage(hairmaskraw.MattingImage);
                 using var hairMask = cihairmask.CreateByApplyingOrientation(ImageIO.CGImagePropertyOrientation.Right);
 
                 if (hairMask == null)

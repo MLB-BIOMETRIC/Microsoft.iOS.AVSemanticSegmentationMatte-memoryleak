@@ -1,3 +1,13 @@
+# MEMORY LEAK FIXED
+
+The memory leak can be fixed by using the MattingImage instead of the hairmaskraw directly!
+
+```csharp
+using var cihairmask = new CIImage(hairmaskraw.MattingImage);
+```
+
+Read more here: https://github.com/xamarin/xamarin-macios/issues/19518#issuecomment-1840364389
+
 # Microsoft.iOS.AVSemanticSegmentationMatte-memoryleak
 
 This repo reproduces the AVSemanticSegmentationMatte memory leak of 2,98 MB.
