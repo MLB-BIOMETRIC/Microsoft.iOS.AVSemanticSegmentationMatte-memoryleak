@@ -15,9 +15,28 @@ public class CameraSetup : UIView
     public CameraSetup()
     {
         cameraProcessor = new CameraProcessor();
+        captureSession = new AVCaptureSession
+        {
+            SessionPreset = AVCaptureSession.PresetPhoto
+        };
+
+        stillImageOutput = new AVCapturePhotoOutput()
+        {
+            MaxPhotoQualityPrioritization = AVCapturePhotoQualityPrioritization.Speed,
+        };
+
+        videoPreviewLayer = new AVCaptureVideoPreviewLayer(captureSession)
+        {
+            VideoGravity = AVLayerVideoGravity.ResizeAspectFill,
+            Frame = Bounds
+        };
+
         Initialize();
     }
 
+    /// <summary>
+    /// Initialize the camera
+    /// </summary>
     public async void Initialize()
     {
         Console.WriteLine("Setting up camera!");
@@ -26,11 +45,7 @@ public class CameraSetup : UIView
             throw new Exception("No camera permission!");
         }
 
-        captureSession = new AVCaptureSession
-        {
-            SessionPreset = AVCaptureSession.PresetPhoto
-        };
-
+        // Use the BuiltInDualWideCamera with DepthData.
         var device = (AVCaptureDevice.GetDefaultDevice(AVCaptureDeviceType.BuiltInDualWideCamera, AVMediaTypes.DepthData, AVCaptureDevicePosition.Back) ?? null) ?? throw new Exception("Device not found!");
 
         var input = new AVCaptureDeviceInput(device, out var error);
@@ -40,11 +55,7 @@ public class CameraSetup : UIView
             throw new Exception("Input has error!");
         }
 
-        stillImageOutput = new AVCapturePhotoOutput()
-        {
-            MaxPhotoQualityPrioritization = AVCapturePhotoQualityPrioritization.Speed,
-        };
-
+        // Add the input and output to the captureSession
         if (captureSession.CanAddInput(input) && captureSession.CanAddOutput(stillImageOutput))
         {
             captureSession.AddInput(input);
@@ -53,6 +64,7 @@ public class CameraSetup : UIView
             setupLivePreview();
         }
 
+        // Enable depth data and semantic segmentation
         if (stillImageOutput.DepthDataDeliverySupported)
         {
             stillImageOutput.DepthDataDeliveryEnabled = true;
@@ -65,22 +77,27 @@ public class CameraSetup : UIView
         }
     }
 
+    /// <summary>
+    /// Setup the live preview of the camera
+    /// </summary>
     private void setupLivePreview()
     {
         Console.WriteLine("Setting up live preview!");
-        videoPreviewLayer = new AVCaptureVideoPreviewLayer(captureSession)
+
+        // Make sure the videoPreviewLayer has a connection to the captureSession before setting the orientation
+        if (videoPreviewLayer.Connection != null)
         {
-            VideoGravity = AVLayerVideoGravity.ResizeAspectFill,
-            Frame = Bounds
-        };
-        videoPreviewLayer.Connection.VideoOrientation = AVCaptureVideoOrientation.Portrait;
+            videoPreviewLayer.Connection.VideoOrientation = AVCaptureVideoOrientation.Portrait;
+            Layer.AddSublayer(videoPreviewLayer);
+            StartLivePreview();
+        }
 
-        Layer.AddSublayer(videoPreviewLayer);
-
-        startLivePreview();
     }
 
-    public void startLivePreview()
+    /// <summary>
+    /// Start the live preview of the camera
+    /// </summary>
+    public void StartLivePreview()
     {
         Console.WriteLine("Live preview started!");
         Task.Run(() =>
@@ -93,16 +110,19 @@ public class CameraSetup : UIView
             });
     }
 
-    public void stopLivePreview()
+    /// <summary>
+    /// Stop the live preview of the camera
+    /// </summary>
+    public void StopLivePreview()
     {
         Console.WriteLine("Live preview stopped!");
-        Task.Run(() =>
-            {
-                captureSession.StartRunning();
-            });
+        Task.Run(captureSession.StartRunning);
     }
 
-    public async Task<bool> CheckCameraPermissionAsync()
+    /// <summary>
+    /// Helper method to check camera permission - or ask for it.
+    /// </summary>
+    public static async Task<bool> CheckCameraPermissionAsync()
     {
         var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
         if (status != PermissionStatus.Granted)

@@ -16,7 +16,8 @@ public partial class ImageShowcasePage : ContentPage
     {
         if (CameraRenderer.CurrentCamera != null)
         {
-            CameraRenderer.CurrentCamera.cameraProcessor.FinishedProcessingPhotoEvent += showPhotoTaken;
+            // Subscribe to the FinishedProcessingPhotoEvent event.
+            CameraRenderer.CurrentCamera.cameraProcessor.FinishedProcessingPhotoEvent += ShowPhotoTaken;
         }
     }
 
@@ -24,20 +25,23 @@ public partial class ImageShowcasePage : ContentPage
     {
         if (CameraRenderer.CurrentCamera != null)
         {
-            CameraRenderer.CurrentCamera.cameraProcessor.FinishedProcessingPhotoEvent -= showPhotoTaken;
+            // Unsubscribe from the FinishedProcessingPhotoEvent event.
+            CameraRenderer.CurrentCamera.cameraProcessor.FinishedProcessingPhotoEvent -= ShowPhotoTaken;
         }
         Photo.Source = null;
         HairMask.Source = null;
     }
 
-    private async void goback_button(object sender, EventArgs e)
+    private async void Goback_button(object sender, EventArgs e)
     {
         await Navigation.PopAsync();
     }
 
-    private void showPhotoTaken(byte[] photodata, byte[] hairmaskdata)
+    /// <summary>
+    /// Helper methdo to show the photo taken.
+    /// </summary>
+    private void ShowPhotoTaken(byte[]? photodata, byte[]? hairmaskdata)
     {
-
         if (photodata != null)
         {
             Photo.Source = ImageSource.FromStream(() => new MemoryStream(photodata));
@@ -57,7 +61,6 @@ public partial class ImageShowcasePage : ContentPage
         {
             HairMaskText.Text = "Error";
         }
-
     }
 
 }

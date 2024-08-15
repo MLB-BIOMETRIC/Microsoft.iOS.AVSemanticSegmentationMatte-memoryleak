@@ -5,20 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "[DEBUG] App",
+            "name": "App",
             "type": "maui",
             "request": "launch",
             "preLaunchTask": "maui: Build",
-            "project": "App",
-            "configuration": "Debug"
-        },
-        {
-            "name": "[RELEASE] App",
-            "type": "maui",
-            "request": "launch",
-            "preLaunchTask": "maui: Build",
-            "project": "App",
-            "configuration": "Release"
         },
     ]
 }

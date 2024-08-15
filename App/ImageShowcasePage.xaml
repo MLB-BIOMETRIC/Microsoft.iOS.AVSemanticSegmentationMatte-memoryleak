@@ -4,53 +4,53 @@
              xmlns:local="clr-namespace:App"
              x:Class="App.ImageShowcasePage">
 
-    <Grid Padding="30,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+       <Grid Padding="30,0">
+              <Grid.RowDefinitions>
+                     <RowDefinition Height="*"/>
+                     <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
 
-        <!-- Main Image Grid -->
-        <Grid Grid.Row="0">
-            <Image x:Name="Photo"
-                   VerticalOptions="FillAndExpand" 
-                   HorizontalOptions="FillAndExpand" 
-                   BackgroundColor="gray" 
-                   Aspect="AspectFill" />
+              <!-- Main Image Grid -->
+              <Grid Grid.Row="0">
+                     <Image x:Name="Photo"
+                            VerticalOptions="FillAndExpand"
+                            HorizontalOptions="FillAndExpand"
+                            BackgroundColor="gray"
+                            Aspect="AspectFill"/>
 
-            <!-- Overlay Label for Main Image -->
-            <Label Text="Loading..." 
-                   VerticalOptions="Center" 
-                   HorizontalOptions="Center"
-                   FontSize="Large" 
-                   TextColor="Black"
-                   x:Name="MainImageText" />
+                     <!-- Overlay Label for Main Image -->
+                     <Label Text="Loading..."
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            FontSize="Large"
+                            TextColor="Black"
+                            x:Name="MainImageText"/>
 
-            <!-- Smaller Image with HairMask -->
-            <Image x:Name="HairMask"
-                   BackgroundColor="white"
-                   VerticalOptions="End" 
-                   HorizontalOptions="End"
-                   HeightRequest="200"
-                   WidthRequest="200"
-                   Aspect="AspectFill"
-                   Margin="0,0,10,10" />
+                     <!-- Smaller Image with HairMask -->
+                     <Image x:Name="HairMask"
+                            BackgroundColor="white"
+                            VerticalOptions="End"
+                            HorizontalOptions="End"
+                            HeightRequest="200"
+                            WidthRequest="200"
+                            Aspect="AspectFill"
+                            Margin="0,0,10,10"/>
 
-            <!-- Overlay Label for HairMask Image -->
-            <Label Text="Loading..." 
-                   VerticalOptions="End" 
-                   HorizontalOptions="End"
-                   Margin="0,0,10,10"
-                   FontSize="Medium" 
-                   TextColor="Black"
-                   x:Name="HairMaskText" />
-        </Grid>
+                     <!-- Overlay Label for HairMask Image -->
+                     <Label Text="Loading..."
+                            VerticalOptions="End"
+                            HorizontalOptions="End"
+                            Margin="0,0,10,10"
+                            FontSize="Medium"
+                            TextColor="Black"
+                            x:Name="HairMaskText"/>
+              </Grid>
 
-        <!-- Go Back Button -->
-        <Button Grid.Row="1"
-                Text="Go back"
-                Clicked="goback_button"
-                HorizontalOptions="FillAndExpand" />
-    </Grid>
+              <!-- Go Back Button -->
+              <Button Grid.Row="1"
+                      Text="Go back"
+                      Clicked="Goback_button"
+                      HorizontalOptions="FillAndExpand"/>
+       </Grid>
 
 </ContentPage>
