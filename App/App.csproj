@@ -15,6 +15,7 @@
 
 		<!-- App Identifier -->
 		<ApplicationId>dk.biometric.memoryleak</ApplicationId>
+		<RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
